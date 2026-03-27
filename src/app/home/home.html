@@ -1,0 +1,79 @@
+<main role="main">
+
+  <section class="jumbotron text-center">
+    <div class="container">
+      <h1 class="jumbotron-heading">{{ title }}</h1>
+      <p class="lead text-muted"><b>OWASP ASVS Checklist</b> Track your Application Security Verification Standard progress.</p>
+    </div>
+  </section>
+
+  <div class="container">
+
+    <!-- Filters -->
+    <div class="filters" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1rem;">
+      <mat-form-field appearance="outline" style="flex-grow: 1;">
+        <mat-label>Rechercher un contrôle</mat-label>
+        <input matInput (input)="searchTerm = $any($event.target).value" placeholder="Recherche..." />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" style="width: 150px;">
+        <mat-label>Niveau ASVS</mat-label>
+        <mat-select [(value)]="selectedLevel">
+          <mat-option value="all">Tous les niveaux</mat-option>
+          <mat-option value="L1">L1</mat-option>
+          <mat-option value="L2">L2</mat-option>
+          <mat-option value="L3">L3</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+     <div class="actions">
+      <button class="primary" (click)="analyse()">Analyser Conformité</button>
+      <button class="warn" (click)="resetSelections()">Reset Selections</button>
+    </div>
+    </div>
+
+    <!-- Accordion par domaine -->
+    <mat-accordion>
+      @for (domain of domains(); track domain) {
+        @if(domain !== "ASVS Results") {
+
+          <mat-expansion-panel>
+
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ domain }}
+              </mat-panel-title>
+              <mat-panel-description>
+                {{ filteredItems(domain).length }} contrôle(s)
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+
+            @for (item of filteredItems(domain); track $index) {
+              <div class="control-item" style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.5rem;">
+
+                <mat-checkbox (change)="toggleItem(item, $event.checked)" [checked]="selected().includes(item)"></mat-checkbox>
+
+                <div class="content" style="flex-grow: 1;">
+                  <strong>
+                    [{{ item['#'] }}] {{ item['Area'] }}
+                    @if (item['CWE'] != null) {
+                      [{{ item['CWE'] }}]
+                    }
+                  </strong>
+                  <p>{{ item['Verification Requirement'] }}</p>
+                </div>
+
+                <span class="badge l1">L {{ item['ASVS Level']}}</span>
+
+              </div>
+            }
+
+          </mat-expansion-panel>
+
+        }
+      }
+    </mat-accordion>
+
+  </div>
+
+</main>
